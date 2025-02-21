@@ -5,7 +5,7 @@ module Lookbook
     included do
       helper PreviewHelper
       send(:helper, Rails.application.routes.url_helpers) # YARD parsing workaround: https://github.com/lsegal/yard/issues/546
-      prepend_view_path Engine.root.join("app/views")
+      prepend_view_path Engine.root.join('app/views')
 
       def render_scenario_to_string(preview, scenario)
         prepend_application_view_paths
@@ -17,7 +17,7 @@ module Lookbook
         template = @render_args[:template]
         locals = @render_args[:locals]
         opts = {}
-        opts[:layout] = nil
+        opts[:layout] = determine_scenario_layout(scenario.layout)
         opts[:assigns] = @render_args[:assigns] || {}
         opts[:locals] = locals if locals.present?
 
@@ -26,11 +26,12 @@ module Lookbook
 
           if scenario.after_render_method.present?
             render_context = Store.new({
-              preview: preview,
-              scenario: scenario,
-              params: user_request_parameters
-            })
-            rendered = @preview.after_render(method: scenario.after_render_method, html: rendered, context: render_context)
+                                         preview: preview,
+                                         scenario: scenario,
+                                         params: user_request_parameters
+                                       })
+            rendered = @preview.after_render(method: scenario.after_render_method, html: rendered,
+                                             context: render_context)
           end
           render html: rendered
         end
@@ -39,9 +40,7 @@ module Lookbook
       def render_in_layout_to_string(template, locals, opts = {})
         with_action_view_settings do
           html = render_to_string(template, locals: locals, **determine_layout(opts[:layout]))
-          if opts[:append_html].present?
-            html += opts[:append_html]
-          end
+          html += opts[:append_html] if opts[:append_html].present?
           render html: html
         end
       end
@@ -57,7 +56,7 @@ module Lookbook
       end
 
       def user_request_parameters
-        request.query_parameters.to_h.filter { |k, v| !k.start_with?("_") }
+        request.query_parameters.to_h.filter { |k, _v| !k.start_with?('_') }
       end
     end
   end

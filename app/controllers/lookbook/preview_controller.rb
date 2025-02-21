@@ -1,4 +1,4 @@
-require "rails/application_controller"
+require 'rails/application_controller'
 
 module Lookbook
   class PreviewController < Rails::ApplicationController
@@ -28,18 +28,34 @@ module Lookbook
       layout_declaration
     end
 
+    def determine_scenario_layout(prepend_views: true)
+      return {} unless defined?(Rails.root)
+
+      layout = nil
+
+      layout = default_scenario_layout if default_scenario_layout.present?
+
+      prepend_application_view_paths if layout.present? && prepend_views
+
+      layout_declaration
+    end
+
     def default_preview_layout
       Lookbook.config.preview_layout
     end
 
+    def default_scenario_layout
+      Lookbook.config.scenario_layout
+    end
+
     def prepend_application_view_paths
-      prepend_view_path Rails.root.join("app/views") if defined?(Rails.root)
+      prepend_view_path Rails.root.join('app/views') if defined?(Rails.root)
     end
 
     def prepend_preview_scenarios_view_path
       prepend_view_path(Engine.preview_paths)
     end
 
-    alias_method :prepend_preview_examples_view_path, :prepend_preview_scenarios_view_path
+    alias prepend_preview_examples_view_path prepend_preview_scenarios_view_path
   end
 end
