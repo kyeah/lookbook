@@ -32,12 +32,10 @@ module Lookbook
       return {} unless defined?(Rails.root)
 
       layout = nil
-
       layout = default_scenario_layout if default_scenario_layout.present?
 
       prepend_application_view_paths if layout.present? && prepend_views
-
-      layout_declaration
+      layout
     end
 
     def default_preview_layout
